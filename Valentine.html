@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffe6f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .container {
+            text-align: center;
+            z-index: 10;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #d63384;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        #yes {
+            background-color: #ff69b4;
+            color: white;
+            transform: scale(1);
+        }
+        #no {
+            background-color: #ccc;
+            color: black;
+            position: absolute;
+        }
+        .love-image {
+            margin-top: 20px;
+            max-width: 300px;
+            height: auto;
+        }
+        .fireworks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff69b4;
+            border-radius: 50%;
+            animation: fall 3s linear infinite;
+        }
+        .particle:nth-child(2n) { background-color: #ff1493; }
+        .particle:nth-child(3n) { background-color: #ffb6c1; }
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .heart {
+            position: absolute;
+            font-size: 2rem;
+            color: #ff69b4;
+            animation: float 4s linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+        .yay {
+            font-size: 3rem;
+            color: #d63384;
+            display: none;
+            z-index: 15;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="question">Will you be my Valentine?</h1>
+        <div class="buttons">
+            <button id="yes">Yes</button>
+            <button id="no">No</button>
+        </div>
+        <img src="https://i.pinimg.com/736x/5d/b2/bb/5db2bb0fe2bc673f1fa01deb89c96e39.jpg" alt="Love Image" class="love-image" id="initial-image">
+    </div>
+    <div class="fireworks" id="fireworks"></div>
+    <div class="hearts" id="hearts"></div>
+    <div class="yay" id="yay">yayyyyyy 💖💖💖💖💖</div>
+    <img src="https://preview.redd.it/c7vtwaqft0b51.jpg?auto=webp&s=6983069461a816a320cf2485cc041f55f3ac0f23" alt="Love Image" class="love-image" id="final-image" style="display: none;">
+
+    <script>
+        const yesBtn = document.getElementById('yes');
+        const noBtn = document.getElementById('no');
+        const question = document.getElementById('question');
+        const initialImage = document.getElementById('initial-image');
+        const finalImage = document.getElementById('final-image');
+        const fireworks = document.getElementById('fireworks');
+        const hearts = document.getElementById('hearts');
+        const yay = document.getElementById('yay');
+
+        let noClicks = 0;
+        const maxClicks = 10; // Number of clicks before No disappears
+
+        // Function to move No button randomly
+        function moveNo() {
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 50);
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+        }
+
+        // No button click handler
+        noBtn.addEventListener('click', () => {
+            noClicks++;
+            moveNo();
+            // Grow Yes button
+            const scale = 1 + (noClicks * 0.5); // Grows bigger each time
+            yesBtn.style.transform = `scale(${scale})`;
+            if (noClicks >= maxClicks) {
+                noBtn.style.display = 'none'; // Hide No after max clicks
+            }
+        });
+
+        // Yes button click handler
+        yesBtn.addEventListener('click', () => {
+            // Hide initial elements
+            question.style.display = 'none';
+            initialImage.style.display = 'none';
+            noBtn.style.display = 'none';
+            yesBtn.style.display = 'none'; // Yes disappears
+
+            // Show fireworks
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                fireworks.appendChild(particle);
+            }
+
+            // Show floating hearts
+            for (let i = 0; i < 30; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.textContent = '💖';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 4 + 's';
+                hearts.appendChild(heart);
+            }
+
+            // Show yay and final image after a short delay
+            setTimeout(() => {
+                yay.style.display = 'block';
+                finalImage.style.display = 'block';
+            }, 1000);
+        });
+
+        // Initial move for No button
+        moveNo();
+    </script>
+</body>
+</html>
